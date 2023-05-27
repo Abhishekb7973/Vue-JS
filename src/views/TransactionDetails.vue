@@ -1,0 +1,158 @@
+<template>
+  <div class="transaction-details">
+    <div class="content-box pt-[40px] pb-[30px] xl:px-[48px] px-[32px]">
+      <block-header>
+        <template v-slot:title>
+          <h2>Transaction Details</h2>
+        </template>
+        <template v-slot:actions>
+          <div class="breadcrumb">
+            Home
+            <img src="../assets/icons/chevron-right.svg" alt="" /> Transaction
+            <img src="../assets/icons/chevron-right.svg" alt="" /> Transaction
+            Details
+          </div>
+        </template>
+      </block-header>
+
+      <ul class="strip-list mt-20">
+        <li>
+          <div>Hash</div>
+          <div class="imp">{{transactionData?.hash }}</div>
+        </li>
+        <li>
+          <div>Status</div>
+          <div><button>{{(transactionData.status | formatHexToInt) ? 'Success' : 'Failed'}}</button></div>
+        </li>
+        <li>
+          <div>Form</div>
+          <div class="green">{{transactionData.from}}</div>
+        </li>
+        <li>
+          <div>To</div>
+          <div class="green">{{transactionData.to}}</div>
+        </li>
+        <li>
+          <div>Time</div>
+          <div>{{timestampToDate(transactionData.block.timestamp)}}</div>
+        </li>
+        <li>
+          <div>Account</div>
+          <div>{{transactionData.value | formatHexToInt}} NEC</div>
+        </li>
+        <li>
+          <div>Block</div>
+          <div>{{transactionData.block.number | formatHexToInt}}</div>
+        </li>
+        <li>
+          <div>Gas Used</div>
+          <div class="green">{{transactionData.gasUsed  | formatHexToInt}}</div>
+        </li>
+        <li>
+          <div>Gas Limit</div>
+          <div>{{transactionData.gas | formatHexToInt}}</div>
+        </li>
+        <li>
+          <div>Gas Price</div>
+          <div>{{transactionData.gasPrice | formatHexToInt}} WEI</div>
+        </li>
+        <li>
+          <div>Nonce</div>
+          <div>{{transactionData.nonce | formatHexToInt}}</div>
+        </li>
+        <li>
+          <div>Transaction Fee</div>
+          <div>{{WEIToNEC(formatHexToInt(transactionData.gasPrice) * formatHexToInt(transactionData.gasUsed))}} NEC</div>
+        </li>
+        <li>
+          <div>Input Data</div>
+          <div> {{ transactionData.inputData }}</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+import BlockHeader from "@/components/common/BlockHeader.vue";
+import gql from "graphql-tag";
+import {
+  timestampToDate,
+  formatHash,
+  numToFixed,
+  formatNumberByLocale,
+  formatHexToInt,
+} from "@/filters";
+import { WEIToNEC } from "@/utils/transactions";
+export default {
+  components: { BlockHeader },
+  name: "transaction-details",
+  data() {
+    return {
+      transactionData: {}
+    };
+  },
+  computed: {
+    id () {
+      return this.$route.query.id
+    }
+  },
+  apollo: {
+    transaction: {
+      query: gql`
+        query TransactionByHash($hash: Bytes32!) {
+          transaction(hash: $hash) {
+            hash
+            index
+            nonce
+            from
+            to
+            value
+            gas
+            gasUsed
+            gasPrice
+            inputData
+            status
+            block {
+              hash
+              number
+              timestamp
+            }
+            tokenTransactions {
+              trxIndex
+              tokenAddress
+              tokenName
+              tokenSymbol
+              tokenType
+              tokenId
+              tokenDecimals
+              type
+              sender
+              recipient
+              amount
+            }
+          }
+        }
+      `,
+      variables() {
+        return {
+          hash: this.id,
+        };
+      },
+      result({data}) {
+        if(data && data.transaction) {
+          this.transactionData = data.transaction
+        }
+      },
+    },
+  },
+  methods: {
+    timestampToDate,
+    formatHash,
+    numToFixed,
+    formatNumberByLocale,
+    formatHexToInt,
+    WEIToNEC,
+  },
+};
+</script>
