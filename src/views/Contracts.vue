@@ -24,11 +24,11 @@
           </td>
         </tr>
         <tr
-          @click="$router.push({ name: 'transactionDetails' })"
           v-for="(item, idx) in tableData"
           :key="idx"
         >
           <td
+          @click="$router.push({ name: 'wallet', query: {id: item[0].value} })"
             :data-th="theadData[idx2].value"
             v-for="(i, idx2) in item"
             :key="'td-' + idx2"

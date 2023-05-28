@@ -8,13 +8,13 @@
           <div class="stats__block">
             <h4>Blocks</h4>
             <h2>
-              {{this.stateData.blocks | formatHexToInt}}
+              {{ this.stateData.blocks | formatHexToInt }}
             </h2>
             <span class="positive">+13.6%</span>
           </div>
           <div class="stats__block">
             <h4>Validators</h4>
-            <h2>{{this.stateData.validators | formatHexToInt }}</h2>
+            <h2>{{ this.stateData.validators | formatHexToInt }}</h2>
             <span class="negative">-10.6%</span>
           </div>
           <div class="stats__block">
@@ -49,12 +49,12 @@
     </div>
 
     <div class="grid mlg:grid-cols-2 gap-7 2xl:gap-10 mt-6">
-      <latest-blocks :blockData="blockData"/>
+      <latest-blocks :blockData="blockData" />
       <latest-transactions :transactions="transactionsData" />
     </div>
 
     <div class="mt-6">
-      <total-nec-burned  />
+      <total-nec-burned />
     </div>
   </div>
 </template>
@@ -65,8 +65,14 @@ import LatestTransactions from "@/components/dashboard/LatestTransactions.vue";
 import TotalNecBurned from "@/components/dashboard/TotalNECBurned.vue";
 // import AnimatedNumber from "animated-number-vue";
 import gql from "graphql-tag";
-import {  timestampToDate, formatHash, numToFixed, formatNumberByLocale, formatHexToInt } from "@/filters";
-import { WEIToNEC } from '@/utils/transactions'
+import {
+  timestampToDate,
+  formatHash,
+  numToFixed,
+  formatNumberByLocale,
+  formatHexToInt,
+} from "@/filters";
+import { WEIToNEC } from "@/utils/transactions";
 
 const GET_NEC_LATEST_BLOCK_BURN_LIST = gql`
   query GetNecLatestBlockBurnList($count: Int = 5) {
@@ -158,9 +164,21 @@ const STATE_QUERY = gql`
     }
   }
 `;
+import { pollingMixin } from "@/mixins/polling";
 export default {
   name: "dashboard-page",
+  mixins: [pollingMixin],
   components: { LatestBlocks, LatestTransactions, TotalNecBurned },
+  mounted() {
+    this._polling.start(
+      "update-net-state",
+      () => {
+        this.updateChainState();
+        this.updateData();
+      },
+      3300
+    );
+  },
   data() {
     return {
       series: [
@@ -212,7 +230,7 @@ export default {
     };
   },
   apollo: {
-    latestBlockBurnList: {
+    necLatestBlockBurnList: {
       query: GET_NEC_LATEST_BLOCK_BURN_LIST,
       variables() {
         return {
@@ -220,7 +238,7 @@ export default {
         };
       },
     },
-    transactionList: {
+    transactions: {
       query: GET_TRANSACTIONS_LIST,
       variables: {
         cursor: null,
@@ -233,7 +251,7 @@ export default {
         }
       },
     },
-    blockList: {
+    blocks: {
       query: GET_BLOCK_LIST,
       variables: {
         cursor: null,
@@ -246,7 +264,7 @@ export default {
         }
       },
     },
-    states : {
+    state: {
       query: STATE_QUERY,
       fetchPolicy: "network-only",
       result({ data }) {
@@ -255,7 +273,7 @@ export default {
         }
       },
     },
-    trxVolumes: {
+    trxVolume: {
       query: GET_TX_VOLUMES,
       variables() {
         return {
@@ -279,13 +297,119 @@ export default {
     },
   },
   methods: {
+    async fetchState() {
+      const dataRes = await this.$apollo.query({
+        query: gql`
+          query State {
+            state {
+              blocks
+              transactions
+              accounts
+              validators
+              sfcLockingEnabled
+              sealedEpoch {
+                id
+                totalSupply
+                baseRewardPerSecond
+              }
+            }
+          }
+        `,
+        fetchPolicy: "network-only",
+      });
+      if (dataRes && dataRes.data && dataRes.data.state) {
+        this.stateData = dataRes.data.state;
+      }
+      return dataRes.data.state || {};
+    },
+    async updateChainState() {
+      this.stateData = { ...(await this.fetchState()) };
+    },
+    async updateData() {
+
+      try {
+        const transactionRes = await this.$apollo.query({
+          query: gql`
+            query TransactionList($cursor: Cursor, $count: Int!) {
+              transactions(cursor: $cursor, count: $count) {
+                pageInfo {
+                  first
+                  last
+                  hasNext
+                  hasPrevious
+                }
+                totalCount
+                edges {
+                  cursor
+                  transaction {
+                    hash
+                    from
+                    to
+                    value
+                    gasUsed
+                    block {
+                      number
+                      timestamp
+                    }
+                  }
+                }
+              }
+            }
+          `,
+          variables: {
+            cursor: null,
+            count: this.itemsPerPage,
+          },
+          fetchPolicy: "network-only",
+        });
+        this.transactionsData = transactionRes.data.transactions.edges;
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        const blockData = await this.$apollo.query({
+          query: gql`
+            query BlockList($cursor: Cursor, $count: Int!) {
+              blocks(cursor: $cursor, count: $count) {
+                totalCount
+                pageInfo {
+                  first
+                  last
+                  hasNext
+                  hasPrevious
+                }
+                edges {
+                  block {
+                    hash
+                    number
+                    timestamp
+                    transactionCount
+                    gasUsed
+                  }
+                  cursor
+                }
+              }
+            }
+          `,
+          variables: {
+            cursor: null,
+            count: this.itemsPerPage,
+          },
+          fetchPolicy: "network-only",
+        });
+        this.blockData = blockData.data.blocks.edges;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     timestampToDate,
     formatHash,
     numToFixed,
     formatNumberByLocale,
     formatHexToInt,
-    WEIToNEC
-  }
+    WEIToNEC,
+  },
 };
 </script>
 

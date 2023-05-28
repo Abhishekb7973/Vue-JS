@@ -7,7 +7,7 @@
             <h2>Address</h2>
             <div class="copy-address lg:!flex !hidden">
               <div class="mr-6 overflow-wrap">
-                0x0000000000000000000000000000000000000000
+                {{ walletData.address }}
               </div>
               <div>
                 <img src="../assets/icons/copy.svg" alt="" />
@@ -25,7 +25,7 @@
       </block-header>
       <div class="copy-address lg:!hidden flex justify-between mt-2 !mx-0">
         <div class="overflow-wrap gap-2">
-          0x0000000000000000000000000000000000000000
+          {{id}}
         </div>
         <div>
           <img src="../assets/icons/copy.svg" alt="" />
@@ -56,7 +56,7 @@
               <h2
                 class="text-[#000] font-bold text-3xl 2xl:text-4xl mb-2 text-nunito"
               >
-                500
+                {{ walletData.totalValue | formatHexToInt }}
               </h2>
               <h5 class="text-[#B9B9B9] text-lg 2xl:text-xl text-roboto">
                 NEC
@@ -85,7 +85,7 @@
               <h2
                 class="text-[#000] font-bold text-3xl 2xl:text-4xl mb-2 text-nunito"
               >
-                1000
+                {{ walletData.totalValue | formatHexToInt }}
               </h2>
               <h5 class="text-[#B9B9B9] text-lg 2xl:text-xl text-roboto">
                 NEC
@@ -152,7 +152,7 @@
         </ul>
       </div>
 
-      <transaction-table v-if="currentTab === 'transaction'" />
+      <transaction-table v-if="currentTab === 'transaction'" :transactions="walletData.txList" :key="transactionKey"/>
       <erc-20-txn-table v-if="currentTab === 'erc20'" />
       <erc-21-txns-table
         v-if="currentTab === 'erc721' || currentTab === 'erc722'"
@@ -173,6 +173,15 @@ import Erc21TxnsTable from "@/components/wallet/Erc21TxnsTable.vue";
 import Erc1155TxnsTable from "@/components/wallet/Erc1155TxnsTable.vue";
 import AssetsTable from "@/components/wallet/AssetsTable.vue";
 import DelegationsTable from "@/components/wallet/DelegationsTable.vue";
+import gql from "graphql-tag";
+import {
+  timestampToDate,
+  formatHash,
+  numToFixed,
+  formatNumberByLocale,
+  formatHexToInt,
+} from "@/filters";
+import { WEIToNEC } from "@/utils/transactions";
 export default {
   components: {
     BlockHeader,
@@ -190,6 +199,7 @@ export default {
       currentTab: "transaction",
       selected: "Transactions",
       dropDown: false,
+      walletData: {},
       tabs: [
         {
           name: "Transactions",
@@ -242,20 +252,218 @@ export default {
           value: "-",
         },
       ],
+      transactionKey: 0
     };
   },
 
   created() {},
+  computed: {
+    id() {
+      return this.$route.query.id;
+    },
+    cAssets() {
+      const { walletData } = this;
+      const assets = {};
+      const validatorIds = [];
 
+      if (walletData) {
+        const { delegations } = walletData;
+
+        assets.available = walletData.balance;
+        // assets.stashed = cAccount.stashed || 0;
+
+        assets.delegated = 0;
+        assets.pending_rewards = 0;
+        assets.claimed_rewards = 0;
+
+        if (delegations && delegations.edges) {
+          delegations.edges.forEach((_edge) => {
+            const { delegation } = _edge;
+
+            validatorIds.push(delegation.toStakerId);
+
+            assets.delegated += delegation ? WEIToNEC(delegation.amount) : 0;
+            assets.pending_rewards +=
+              delegation && delegation.pendingRewards
+                ? WEIToNEC(delegation.pendingRewards.amount)
+                : 0;
+            assets.claimed_rewards += delegation
+              ? WEIToNEC(delegation.claimedReward)
+              : 0;
+          });
+
+          this.setValidators(validatorIds);
+        }
+      }
+      return assets;
+    },
+  },
+  watch: {
+    cAssets(newData) {
+      this.stacking.map((ele)=> {
+        const name = ele.name
+        if(ele.name == 'Delegated') {
+          ele.name = name
+          ele.value = newData.delegated
+        }
+        if(ele.name == 'Pending Rewards') {
+          ele.name =name
+          ele.value = newData.pending_rewards
+        }
+        if(ele.name == 'Stashed Rewards') {
+          ele.name = name
+          ele.value = newData.stashed
+        }
+        if(ele.name == 'Claimed Rewards') {
+          ele.name = name
+          ele.value = this.WEIToNEC(newData.claimed_rewards)
+        }
+        if(ele.name == 'Validators') {
+          ele.name = name
+          ele.value = ''
+        }
+      })
+      this.transactionKey++
+    }
+  },
   methods: {
     select(e) {
       this.currentTab = e.slug;
       this.selected = e.name;
       this.dropDown = false;
     },
+    async setValidators(_validatorIds) {
+      let data;
+
+      if (this.validators === null) {
+        data = await this.fetchValidators();
+
+        this.validators = data.filter((_validator) => {
+          if (_validatorIds.indexOf(_validator.id) > -1) {
+            _validator.name = `${
+              _validator.stakerInfo
+                ? _validator.stakerInfo.name
+                : this.$t("unknown")
+            }, ${parseInt(_validator.id, 16)}`;
+            return true;
+          }
+
+          return false;
+        });
+      }
+    },
+
+    timestampToDate,
+    formatHash,
+    numToFixed,
+    formatNumberByLocale,
+    formatHexToInt,
+    WEIToNEC,
+  },
+  apollo: {
+    account: {
+      query: gql`
+        query AccountByAddress(
+          $address: Address!
+          $cursor: Cursor
+          $count: Int!
+        ) {
+          account(address: $address) {
+            address
+            contract {
+              address
+              deployedBy {
+                hash
+                contractAddress
+              }
+              name
+              version
+              compiler
+              sourceCode
+              abi
+              validated
+              supportContact
+              timestamp
+            }
+            balance
+            totalValue
+            txCount
+            txList(cursor: $cursor, count: $count) {
+              pageInfo {
+                first
+                last
+                hasNext
+                hasPrevious
+              }
+              totalCount
+              edges {
+                cursor
+                transaction {
+                  hash
+                  from
+                  to
+                  value
+                  gasUsed
+                  block {
+                    number
+                    timestamp
+                  }
+                  tokenTransactions {
+                    trxIndex
+                    tokenAddress
+                    tokenName
+                    tokenSymbol
+                    tokenType
+                    tokenId
+                    tokenDecimals
+                    type
+                    sender
+                    recipient
+                    amount
+                  }
+                }
+              }
+            }
+            staker {
+              id
+              createdTime
+              isActive
+            }
+            delegations {
+              totalCount
+              edges {
+                delegation {
+                  toStakerId
+                  createdTime
+                  amount
+                  claimedReward
+                  pendingRewards {
+                    amount
+                  }
+                }
+                cursor
+              }
+            }
+          }
+        }
+      `,
+      variables() {
+        return {
+          address: this.id,
+          count: 20,
+          cursor: null,
+        };
+      },
+      result({ data }) {
+        console.log(data);
+        this.walletData = data?.account || {};
+      },
+      // error(_error) {
+      //   this.dAccountByAddressError = _error.message;
+      // },
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

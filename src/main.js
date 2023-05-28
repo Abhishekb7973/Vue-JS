@@ -9,6 +9,7 @@ import "./assets/scss/main.scss";
 // import apolloProvider from './apollo';
 import './filters.js'
 import './plugins/vue-timeago.js'
+import './plugins/dayjs.js';
 import { DeFi } from './plugins/defi/defi';
 
 Vue.use(DeFi, {

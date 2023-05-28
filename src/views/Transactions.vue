@@ -133,7 +133,7 @@ export default {
     };
   },
   apollo: {
-    transactionEdges: {
+    transactions: {
       query: GET_TRANSACTION_LIST,
       variables() {
         return {

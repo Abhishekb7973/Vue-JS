@@ -20,6 +20,7 @@
     "apollo-link-retry": "^2.2.16",
     "assert": "^2.0.0",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.7",
     "graphql": "^15.8.0",
     "graphql-tag": "^2.12.6",
     "shortid": "^2.2.16",
