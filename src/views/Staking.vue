@@ -239,6 +239,7 @@ export default {
       dTotalSupply: 0,
       dRecordsCount: 0,
       totalstakesCount: 0,
+      epochData: {},
       theadData2: [
         { value: "" },
         { value: "Name" },
@@ -439,6 +440,7 @@ export default {
       },
       result({data}) {
         console.log(data, 'onepoch')
+        this.epochData = data.epoch
         this.dTotalSupply = WEIToNEC(data.epoch.totalSupply);
       },
     },
@@ -461,6 +463,7 @@ export default {
         ),
         fTotalStaked: formatNumberByLocale(numToFixed(_totals.totalStaked, 2)),
       };
+      this.series = [parseInt(this.dTotals.fSelfStaked), parseInt(this.dTotals.fTotalDelegated), parseInt(this.dTotals.fTotalStaked), parseInt(this.formatNumberByLocale(this.numToFixed(this.WEIToNEC(this.epochData?.baseRewardPerSecond || 0) * 86400), 0))]
     },
 
     onValidatorListOffline(_offline) {
