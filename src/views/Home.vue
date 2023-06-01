@@ -5,14 +5,14 @@
         <div
           class="stats grid xl:grid-cols-4 mlg:grid-cols-2 sm:grid-cols-4 grid-cols-2 xl:mt-10"
         >
-          <div class="stats__block">
+          <div class="stats__block cursor-pointer" @click="$router.push({ name: 'blocks' })">
             <h4>Blocks</h4>
             <h2>
               {{ this.stateData.blocks | formatHexToInt }}
             </h2>
             <span class="positive">+13.6%</span>
           </div>
-          <div class="stats__block">
+          <div class="stats__block cursor-pointer" @click="$router.push({ name: 'staking' })">
             <h4>Validators</h4>
             <h2>{{ this.stateData.validators | formatHexToInt }}</h2>
             <span class="negative">-10.6%</span>
@@ -22,7 +22,7 @@
             <h2>{{ this.stateData.accounts | formatHexToInt }}</h2>
             <span class="positive">+13.6%</span>
           </div>
-          <div class="stats__block">
+          <div class="stats__block cursor-pointer" @click="$router.push({ name: 'transactions' })">
             <h4>Transactions</h4>
             <h2>{{ this.stateData.transactions | formatHexToInt }}</h2>
             <span class="positive">+13.6%</span>
@@ -43,11 +43,6 @@
       </div>
     </div>
 
-    <div class="grid-cols-2 gap-7 2xl:gap-10 mt-6 lg:grid hidden">
-      <div class="my_ads_block">Ads</div>
-      <div class="my_ads_block">Ads</div>
-    </div>
-
     <div class="grid mlg:grid-cols-2 gap-7 2xl:gap-10 mt-6">
       <latest-blocks :blockData="blockData" />
       <latest-transactions :transactions="transactionsData" />
@@ -55,6 +50,10 @@
 
     <div class="mt-6">
       <total-nec-burned />
+    </div>
+    <div class="grid-cols-2 gap-7 2xl:gap-10 mt-6 lg:grid hidden">
+      <div class="my_ads_block">Ads</div>
+      <div class="my_ads_block">Ads</div>
     </div>
   </div>
 </template>
@@ -358,7 +357,7 @@ export default {
           `,
           variables: {
             cursor: null,
-            count: this.itemsPerPage,
+            count: 10,
           },
           fetchPolicy: "network-only",
         });
@@ -394,7 +393,7 @@ export default {
           `,
           variables: {
             cursor: null,
-            count: this.itemsPerPage,
+            count: 10,
           },
           fetchPolicy: "network-only",
         });

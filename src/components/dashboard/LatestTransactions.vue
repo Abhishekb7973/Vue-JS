@@ -5,7 +5,7 @@
         <h3>Latest Transactions</h3>
       </template>
       <template v-slot:actions>
-        <router-link to="" class="view-all">View All</router-link>
+        <router-link to="/transactions" class="view-all">View All</router-link>
       </template>
     </block-header>
 

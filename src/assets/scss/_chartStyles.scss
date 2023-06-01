@@ -5,7 +5,7 @@
   .apexcharts-legend.apexcharts-align-center.apx-legend-position-bottom {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    justify-items: center;
+    justify-items: baseline;
     gap: 15px;
 
     .apexcharts-legend-series {

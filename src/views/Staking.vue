@@ -145,7 +145,6 @@
           </td>
         </tr>
         <tr
-          @click="$router.push({ name: 'validatorDetails' })"
           v-for="(item, idx) in tableData2"
           :key="idx"
         >
@@ -153,6 +152,7 @@
             :data-th="theadData2[idx2].value"
             v-for="(i, idx2) in item"
             :key="'td-' + idx2"
+            @click="$router.push({ name: 'validatorDetails', query: {id: item[3].value} })"
           >
             <!-- <img
               v-if="idx2 === 0"
@@ -262,7 +262,6 @@ export default {
         legend: {
           position: "bottom",
         },
-
         dataLabels: {
           enabled: false,
         },
@@ -359,6 +358,33 @@ export default {
         });
         this.$apollo.queries.epoch.skip = false;
       },
+    },  
+    epoch: {
+      query: gql`
+        query LastEpoch($id: Long!) {
+          epoch(id: $id) {
+            id
+            endTime
+            duration
+            epochFee
+            totalSupply
+            baseRewardPerSecond
+          }
+        }
+      `,
+      // skip() {
+      //   return true;
+      // },
+      variables() {
+        return {
+          id: "",
+        };
+      },
+      result({data}) {
+        console.log(data, 'onepoch')
+        this.epochData = data.epoch
+        this.dTotalSupply = WEIToNEC(data.epoch.totalSupply);
+      },
     },
     stakers: {
       query: gql`
@@ -417,33 +443,6 @@ export default {
         }
       },
     },
-    epoch: {
-      query: gql`
-        query LastEpoch($id: Long!) {
-          epoch(id: $id) {
-            id
-            endTime
-            duration
-            epochFee
-            totalSupply
-            baseRewardPerSecond
-          }
-        }
-      `,
-      // skip() {
-      //   return true;
-      // },
-      variables() {
-        return {
-          id: "",
-        };
-      },
-      result({data}) {
-        console.log(data, 'onepoch')
-        this.epochData = data.epoch
-        this.dTotalSupply = WEIToNEC(data.epoch.totalSupply);
-      },
-    },
   },
 
   methods: {
@@ -460,10 +459,12 @@ export default {
         fSelfStaked: formatNumberByLocale(numToFixed(_totals.selfStaked, 2)),
         fTotalDelegated: formatNumberByLocale(
           numToFixed(_totals.totalDelegated, 2)
-        ),
-        fTotalStaked: formatNumberByLocale(numToFixed(_totals.totalStaked, 2)),
-      };
-      this.series = [parseInt(this.dTotals.fSelfStaked), parseInt(this.dTotals.fTotalDelegated), parseInt(this.dTotals.fTotalStaked), parseInt(this.formatNumberByLocale(this.numToFixed(this.WEIToNEC(this.epochData?.baseRewardPerSecond || 0) * 86400), 0))]
+          ),
+          fTotalStaked: formatNumberByLocale(numToFixed(_totals.totalStaked, 2)),
+        };
+        setTimeout(() => {
+          this.series = [parseInt(this.dTotals.fSelfStaked), parseInt(this.dTotals.fTotalDelegated), parseInt(this.formatNumberByLocale(this.numToFixed(this.WEIToNEC(this.epochData?.baseRewardPerSecond || 0) * 86400), 0)), parseInt(this.dTotals.fTotalStaked)]
+        }, 500);
     },
 
     onValidatorListOffline(_offline) {

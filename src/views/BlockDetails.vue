@@ -67,8 +67,10 @@
             v-for="(i, idx2) in item"
             :key="'td-' + idx2"
           >
-            <template v-if="i.key == 'has' || i.key == 'from' || i.key == 'to'">
-              {{ i.value | formatHash}}
+            <template v-if="i.key == 'has' || i.key == 'from' || i.key == 'to'" >
+              <div class="cursor-pointer" v-if="i.key == 'has'" @click="$router.push({path: '/transaction/details', query: {id: i.value}})">
+                {{ i.value | formatHash}}
+              </div>
             </template>
             <template v-else-if="i.key == 'timeStamp'">
               <timeago :datetime="timestampToDate(i.value)" :auto-update="1" :converter-options="{includeSeconds: true}"></timeago>

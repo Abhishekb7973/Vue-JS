@@ -13,7 +13,12 @@
           <timeago :datetime="timestampToDate(tableData2[x][y].value)" :auto-update="1" :converter-options="{includeSeconds: true}"></timeago>
         </template>
         <template v-else>
-          {{ tableData2[x][y].value }}
+          <div v-if="tableData2[x][y].key == 'has'" @click="$router.push({ name: 'transactionDetails', query: {id: tableData2[x][y].rawData} })">
+            {{ tableData2[x][y].value }}
+          </div>
+          <div v-else>
+            {{ tableData2[x][y].value }}
+          </div>
         </template>
       </td>
     </tr>
@@ -42,7 +47,7 @@ export default {
       this.transactions.edges.forEach((ele)=> {
         console.log(ele)
         tempData.push([
-          { value: this.formatHash(ele.transaction.hash), key : 'has' },
+          { value: this.formatHash(ele.transaction.hash), key : 'has' , rawData: ele.transaction.hash},
           { value: ele.transaction.block.timestamp, key: 'timeStamp' },
           {value: '', key:'addres'},
           { value: this.formatHexToInt(ele.transaction.gasUsed), key: 'gasUsed' },

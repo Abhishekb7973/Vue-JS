@@ -4,7 +4,7 @@
   >
     <block-header>
       <template v-slot:title>
-        <h2>Contracts <span class="data-count">10</span></h2>
+        <h2>Contracts <span class="data-count">{{totalcontracts | formatHexToInt}}</span></h2>
       </template>
       <template v-slot:actions>
         <div class="instruction">Scroll down to see more</div>

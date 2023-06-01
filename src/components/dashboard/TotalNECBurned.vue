@@ -1,5 +1,5 @@
 <template>
-  <div class="total-nec-burned content-box px-[35px] py-[30px]">
+  <div class="total-nec-burned content-box px-[35px] py-[30px]" style="max-height: 520px;">
     <div class="md:grid md:grid-cols-10">
       <div class="xl:col-span-4 md:col-span-5">
         <block-header>
@@ -54,7 +54,7 @@ const GET_BURNT_TOTAL = gql`
 
 const GET_BURNT_LIST = gql`
                     query GetNecLatestBlockBurnList($count: Int = 25) {
-                        necLatestBlockBurnList(count: $count) {
+                      tpcLatestBlockBurnList(count: $count) {
                             blockNumber
                             timestamp
                             necValue
@@ -100,7 +100,7 @@ export default {
     };
   },
   apollo: {
-    burntTotal: {
+    burnTotalAmount: {
       query: GET_BURNT_TOTAL,
       fetchPolicy: "network-only",
       result({ data }) {
@@ -109,7 +109,7 @@ export default {
         }
       },
     },
-    burntList: {
+    burnListData: {
       query: GET_BURNT_LIST,
       variables: {
           count: 5,

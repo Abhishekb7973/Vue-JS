@@ -26,11 +26,11 @@
         </li>
         <li>
           <div>Form</div>
-          <div class="green">{{transactionData.from}}</div>
+          <div class="green cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: transactionData.from} })">{{transactionData.from}}</div>
         </li>
         <li>
           <div>To</div>
-          <div class="green">{{transactionData.to}}</div>
+          <div class="green cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: transactionData.to} })">{{transactionData.to}}</div>
         </li>
         <li>
           <div>Time</div>
@@ -42,11 +42,11 @@
         </li>
         <li>
           <div>Block</div>
-          <div>{{transactionData.block.number | formatHexToInt}}</div>
+          <div class="green cursor-pointer" @click="$router.push({path: '/blocks/details/', query: {id: transactionData.block.number}})">{{transactionData.block.number | formatHexToInt}}</div>
         </li>
         <li>
           <div>Gas Used</div>
-          <div class="green">{{transactionData.gasUsed  | formatHexToInt}}</div>
+          <div>{{transactionData.gasUsed  | formatHexToInt}}</div>
         </li>
         <li>
           <div>Gas Limit</div>

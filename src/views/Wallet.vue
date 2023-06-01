@@ -9,7 +9,7 @@
               <div class="mr-6 overflow-wrap">
                 {{ walletData.address }}
               </div>
-              <div>
+              <div @click="copyToClipboard(walletData.address)">
                 <img src="../assets/icons/copy.svg" alt="" />
                 Copy
               </div>
@@ -351,6 +351,15 @@ export default {
           return false;
         });
       }
+    },
+    copyToClipboard(value) {
+      const textArea = document.createElement('textarea');
+      textArea.value = value; // Replace with the actual text you want to copy
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      // alert('Text copied to clipboard!');
     },
 
     timestampToDate,

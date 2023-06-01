@@ -18,21 +18,25 @@
         <li>
           <div>Name</div>
           <div class="imp flex items-center">
-            <img
-              src="../assets/img/ncog-token-with-bevel.png"
-              class="mr-2"
-              alt=""
-            />
-            Unknown
+            <div class="validator-img">
+              <div class="validator-img">
+                  <img v-if="cStakerLogoUrl"  :src="cStakerLogoUrl" :alt="cStakerName" class="not-fluid">
+                  <img v-else src="../assets/img/ncog-token-with-bevel.png" alt="ncogearthchain logo" class="not-fluid">
+              </div>
+
+              {{ cStakerName }}
+          </div>
           </div>
         </li>
         <li>
           <div>Validator</div>
-          <div>02</div>
+          <div v-show="'id' in cStaker">
+              {{ cStaker.id | formatHexToInt }}
+          </div>
         </li>
         <li>
           <div>Delegate Address</div>
-          <div>0x8888e0cf8e6bed026cb17c0305e1a47102e1fd70</div>
+          <div>{{ id}}</div>
         </li>
         <li>
           <div>Staking start epoch</div>
@@ -119,9 +123,20 @@
     </div>
   </div>
 </template>
-  
-  <script>
+
+<script>
 import BlockHeader from "@/components/common/BlockHeader.vue";
+import gql from "graphql-tag";
+const dayS = 60 * 60 * 24;
+import {
+  timestampToDate,
+  formatHash,
+  numToFixed,
+  formatNumberByLocale,
+  formatHexToInt,
+  prepareTimestamp
+} from "@/filters";
+import { WEIToNEC } from "@/utils/transactions";
 export default {
   components: { BlockHeader },
   name: "validator-details",
@@ -140,7 +155,109 @@ export default {
           { value: "10,000,000.00" },
         ],
       ],
+      stakerData: {},
     };
+  },
+  apollo: {
+    staker: {
+      query: gql`
+        query StakerByAddress($address: Address!) {
+          staker(address: $address) {
+            id
+            stakerAddress
+            totalStake
+            stake
+            delegatedMe
+            createdEpoch
+            createdTime
+            downtime
+            lockedUntil
+            isActive
+            isOffline
+            stakerInfo {
+              name
+              website
+              contact
+              logoUrl
+            }
+          }
+        }
+      `,
+      variables() {
+        return {
+          address: this.id,
+        };
+      },
+      result({ data }) {
+        this.stakerData = data.staker;
+      },
+    },
+  },
+  computed: {
+    id() {
+      return this.$route.query.id;
+    },
+    cStaker() {
+      return this.staker || {};
+    },
+
+    cStakerName() {
+      const { stakerData } = this;
+
+      return stakerData && stakerData.stakerInfo && stakerData.stakerInfo.name
+        ? stakerData.stakerInfo.name
+        : 'Unknown';
+    },
+
+    cStakerWebsite() {
+      const { stakerData } = this;
+
+      return stakerData && stakerData.stakerInfo
+        ? stakerData.stakerInfo.website || stakerData.stakerInfo.contact
+        : "";
+    },
+
+    cStakerLogoUrl() {
+      const { stakerData } = this;
+
+      return stakerData && stakerData.stakerInfo && stakerData.stakerInfo.logoUrl
+        ? stakerData.stakerInfo.logoUrl
+        : "";
+    },
+
+    cDelegationItems() {
+      const { cStaker } = this;
+      let items = [];
+
+      if (cStaker && cStaker.delegations) {
+        items = cStaker.delegations;
+      }
+
+      return items;
+    },
+
+    cLoading() {
+      return this.$apollo.queries.staker.loading;
+    },
+
+    cLockDays() {
+      const { cStaker } = this;
+      const ts =
+        cStaker && cStaker.lockedUntil
+          ? prepareTimestamp(cStaker.lockedUntil)
+          : 0;
+
+      return ts > 0 ? parseInt((ts - Date.now()) / (dayS * 1000), 10) : "-";
+    },
+  },
+  methods: {
+    timestampToDate,
+    formatHash,
+    numToFixed,
+    formatNumberByLocale,
+    formatHexToInt,
+    WEIToNEC,
+    prepareTimestamp
   },
 };
 </script>

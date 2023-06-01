@@ -5,11 +5,11 @@
         <h3>Latest Blocks</h3>
       </template>
       <template v-slot:actions>
-        <router-link to="" class="view-all">View All</router-link>
+        <router-link to="/blocks" class="view-all" >View All</router-link>
       </template>
     </block-header>
 
-    <ul class="blocks-list mt-6 max-h-400 overflow-y-auto">
+    <ul class="blocks-list mt-6 max-h-400 overflow-y-auto overflow-x-hidden">
       <li
         v-for="(block, idx) in blockData"
         class="grid grid-cols-[repeat(14,minmax(0,1fr))]"
