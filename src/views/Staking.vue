@@ -381,7 +381,6 @@ export default {
         };
       },
       result({data}) {
-        console.log(data, 'onepoch')
         this.epochData = data.epoch
         this.dTotalSupply = WEIToNEC(data.epoch.totalSupply);
       },
@@ -438,7 +437,6 @@ export default {
             ])
           });
           this.onValidatorListTotals(totals)
-          console.log(this.dTotals, 'tetsts')
           this.tableData2 = tempStackData
         }
       },

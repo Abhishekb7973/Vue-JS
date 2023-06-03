@@ -17,7 +17,10 @@ export const ncogearthchainFApolloClient = new FApolloClient({
 });
 
 export const testFApolloClient = new FApolloClient({
-    apolloProviders: [{http: 'https://xapi-test.ncogchain.earth/'}],
+    apolloProviders: [{
+        http: 'https://xapi-test.ncogchain.earth/'
+        // http: 'https://xapi.techpay.io/',
+    }],
     defaultProviderIndex: 'random',
 });
 

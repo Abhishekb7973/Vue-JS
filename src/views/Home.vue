@@ -181,14 +181,10 @@ export default {
   data() {
     return {
       series: [
-        // {
-        //   name: "series1",
-        //   data: [31, 40, 28, 51, 42, 109, 100],
-        // },
-        // {
-        //   name: "series2",
-        //   data: [11, 32, 45, 32, 34, 52, 41],
-        // },
+        {
+          name: "series1",
+          data: [31, 40, 28, 51, 42, 109, 100],
+        },
       ],
       chartOptions: {
         legend: {
@@ -197,6 +193,9 @@ export default {
         chart: {
           height: "270px",
           type: "area",
+            toolbar: {
+            show: false
+          },
         },
         dataLabels: {
           enabled: false,
@@ -205,20 +204,13 @@ export default {
           curve: "straight",
         },
         xaxis: {
-          type: "datetime",
+          type: "date",
           categories: [
-            "2018-09-19T00:00:00.000Z",
-            "2018-09-19T01:30:00.000Z",
-            "2018-09-19T02:30:00.000Z",
-            "2018-09-19T03:30:00.000Z",
-            "2018-09-19T04:30:00.000Z",
-            "2018-09-19T05:30:00.000Z",
-            "2018-09-19T06:30:00.000Z",
           ],
         },
         tooltip: {
           x: {
-            format: "dd/MM/yy HH:mm",
+            format: "yyyy-MM-dd",
           },
         },
       },
@@ -285,12 +277,20 @@ export default {
           this.trxVolumesData = data.trxVolume;
           const xAxisData = [];
           const yAxisData = [];
-          data.trxVolume.forEach((element) => {
+          for (let index = 0; index < data.trxVolume.length; index++) {
+            const element = data.trxVolume[index];
             xAxisData.push(element.day);
             yAxisData.push(element.volume);
-          });
-          this.chartOptions.xaxis.categories = xAxisData;
-          this.series[0] = { name: "trxVolume", data: yAxisData };
+          }
+          // tempData.push(5)
+          // data.trxVolume.map((element) => {
+            //   console.log(element.day)
+            //   xAxisData.push(element.day);
+            //   yAxisData.push(element.volume);
+            // });
+            this.$set(this.chartOptions.xaxis.categories, xAxisData);
+          // this.chartOptions.xaxis.categories = xAxisData;
+          this.series= [{ name: "trxVolume", data: yAxisData }];
         }
       },
     },

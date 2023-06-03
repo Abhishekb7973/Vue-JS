@@ -45,7 +45,6 @@ export default {
           { value: "Amount (NEC)" },
         ]]
       this.transactions.edges.forEach((ele)=> {
-        console.log(ele)
         tempData.push([
           { value: this.formatHash(ele.transaction.hash), key : 'has' , rawData: ele.transaction.hash},
           { value: ele.transaction.block.timestamp, key: 'timeStamp' },
@@ -131,7 +130,6 @@ export default {
           { value: "Amount (NEC)" },
         ]]
       this.transactions.edges.forEach((ele)=> {
-        console.log(ele)
         tempData.push([
           { value: ele.transaction.hash, key : 'has' },
           { value: ele.transaction.block.timestamp, key: 'timeStamp' },
@@ -140,7 +138,6 @@ export default {
           { value: this.fo(ele.transaction.value), key: 'value' },
         ])
         this.tableData2 = tempData
-        console.log(this.tableData2, 'table')
       })
     }
   },

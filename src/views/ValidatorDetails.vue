@@ -20,63 +20,92 @@
           <div class="imp flex items-center">
             <div class="validator-img">
               <div class="validator-img">
-                  <img v-if="cStakerLogoUrl"  :src="cStakerLogoUrl" :alt="cStakerName" class="not-fluid">
-                  <img v-else src="../assets/img/ncog-token-with-bevel.png" alt="ncogearthchain logo" class="not-fluid">
+                <img v-if="cStakerLogoUrl" :src="cStakerLogoUrl" :alt="cStakerName" class="not-fluid" />
+                <img v-else src="../assets/img/ncog-token-with-bevel.png" alt="ncogearthchain logo" class="not-fluid" />
               </div>
 
               {{ cStakerName }}
-          </div>
+            </div>
           </div>
         </li>
         <li>
           <div>Validator</div>
           <div v-show="'id' in cStaker">
-              {{ cStaker.id | formatHexToInt }}
+            {{ cStaker.id | formatHexToInt }}
           </div>
         </li>
         <li>
           <div>Delegate Address</div>
-          <div>{{ id}}</div>
+          <div>{{ id }}</div>
         </li>
         <li>
           <div>Staking start epoch</div>
-          <div>0</div>
+          <div>{{ cStaker?.createdEpoch | formatHexToInt }}</div>
         </li>
         <li>
           <div>Staking start time</div>
-          <div>Jan 19, 2022, 06:35 PM GMT+6</div>
+          <div>
+            {{
+              formatDate(timestampToDate(formatHexToInt(cStaker.createdTime)))
+            }}
+          </div>
         </li>
         <li>
           <div>Amount staked</div>
-          <div>10,000,000.00 NEC</div>
+          <div>
+            {{
+              formatNumberByLocale(numToFixed(WEIToNEC(cStaker.stake), 0))
+            }}
+            NEC
+          </div>
         </li>
         <li>
           <div>Amount delegated</div>
-          <div>0.00 NEC</div>
+          <div>
+            {{
+              formatNumberByLocale(numToFixed(WEIToNEC(cStaker.delegatedMe), 0))
+            }}
+            NEC
+          </div>
         </li>
         <li>
           <div>Staking total</div>
-          <div>10,000,000.00 NEC</div>
+          <div>
+            {{
+              formatNumberByLocale(numToFixed(WEIToNEC(cStaker.totalStake), 0))
+            }}
+            NEC
+          </div>
         </li>
         <li>
           <div>Active</div>
-          <div>Yes</div>
+          <div>{{ cStaker.isActive ? "Yes" : "No" }}</div>
         </li>
         <li>
           <div>Online</div>
-          <div>Yes</div>
+          <div>{{ cStaker.isOffline ? "No" : "Yes" }}</div>
         </li>
         <li>
           <div>Downtime</div>
-          <div>0 s</div>
+          <div>
+            {{
+              clampDowntime(
+                Math.round(formatHexToInt(cStaker.downtime) / 10000000) / 100
+              )
+            }}
+            s
+          </div>
         </li>
         <li>
           <div>Locked Until</div>
-          <div>2 transactions in block</div>
+          <div>
+            {{ formatDate(timestampToDate(cStaker.lockedUntil)) }} transactions
+            in block
+          </div>
         </li>
         <li>
           <div>Lock (Days)</div>
-          <div>-</div>
+          <div>{{ cLockDays ? cLockDays : "-" }}</div>
         </li>
       </ul>
     </div>
@@ -90,31 +119,30 @@
 
       <table class="block-details-table with-header">
         <tr>
-          <td
-            class="thead"
-            :data-th="th.value"
-            v-for="(th, idx) in theadData2"
-            :key="'th-' + idx"
-          >
+          <td class="thead" :data-th="th.value" v-for="(th, idx) in theadData2" :key="'th-' + idx">
             {{ th.value }}
           </td>
         </tr>
         <tr v-for="(item, idx) in tableData2" :key="idx">
-          <td
-            :data-th="theadData2[idx2].value"
-            v-for="(i, idx2) in item"
-            :key="'td-' + idx2"
-          >
-            {{ i.value }}
+          <td :data-th="theadData2[idx2].value" v-for="(i, idx2) in item" :key="'td-' + idx2">
+            <template v-if="i.key == 'address'">
+              <div @click="$router.push({ name: 'wallet', query: {id: i.value} })">
+                {{ i.value | formatHash}}
+              </div>
+            </template>
+            <template v-else-if="i.key == 'amount'">
+              {{formatNumberByLocale(numToFixed(WEIToNEC(i.value), 2), 2)}}
+            </template>
+            <template v-else-if="i.key == 'createdTime'">
+              {{ (formatDate(timestampToDate(i.value)))  }}
+            </template>
+            <template v-else>
+              {{  i.value }}
+            </template>
           </td>
         </tr>
         <tr v-if="tableData2.length < 1" class="mlg:hidden">
-          <td
-            :data-th="th.value"
-            v-for="(th, idx) in theadData2"
-            :key="'noItem-' + idx"
-            class="!text-[#1E1E1E]"
-          >
+          <td :data-th="th.value" v-for="(th, idx) in theadData2" :key="'noItem-' + idx" class="!text-[#1E1E1E]">
             no items
           </td>
         </tr>
@@ -134,7 +162,9 @@ import {
   numToFixed,
   formatNumberByLocale,
   formatHexToInt,
-  prepareTimestamp
+  prepareTimestamp,
+  formatDate,
+  clampDowntime
 } from "@/filters";
 import { WEIToNEC } from "@/utils/transactions";
 export default {
@@ -150,9 +180,9 @@ export default {
       ],
       tableData2: [
         [
-          { value: "0x1836d1 ... 4ec43e" },
-          { value: "Jan 19, 2022, 06:35 PM GMT+6" },
-          { value: "10,000,000.00" },
+          // { value: "0x1836d1 ... 4ec43e" },
+          // { value: "Jan 19, 2022, 06:35 PM GMT+6" },
+          // { value: "10,000,000.00" },
         ],
       ],
       stakerData: {},
@@ -191,6 +221,51 @@ export default {
       result({ data }) {
         this.stakerData = data.staker;
       },
+    },
+    delegationsOf: {
+      query: gql`
+                    query DelegationList($staker: BigInt!, $cursor: Cursor, $count: Int!) {
+                        delegationsOf(staker: $staker, cursor: $cursor, count: $count) {
+                            totalCount
+                            pageInfo {
+                                first
+                                last
+                                hasNext
+                                hasPrevious
+                            }
+                            edges {
+                                cursor
+                                delegation {
+                                    address
+                                    amount
+                                    createdTime
+                                }
+                            }
+                        }
+                    }
+                `,
+      skip() {
+        return !this.cStaker.id;
+      },
+      variables() {
+        return {
+          staker: this.cStaker.id,
+          cursor: null,
+          count: 10
+        }
+      },
+      result({ data }) {
+        const tempData = []
+        data.delegationsOf.edges.forEach((ele) => {
+          console.log(ele, 'testele')
+          tempData.push([
+            { value: ele.delegation.address, key: 'address' },
+            { value: ele.delegation.amount, key: 'amount' },
+            { value: ele.delegation.createdTime, key: 'createdTime' },
+          ])
+        })
+        this.tableData2 = tempData
+      }
     },
   },
   computed: {
@@ -257,7 +332,9 @@ export default {
     formatNumberByLocale,
     formatHexToInt,
     WEIToNEC,
-    prepareTimestamp
+    prepareTimestamp,
+    formatDate,
+    clampDowntime
   },
 };
 </script>

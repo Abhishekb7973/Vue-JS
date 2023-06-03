@@ -464,7 +464,6 @@ export default {
         };
       },
       result({ data }) {
-        console.log(data);
         this.walletData = data?.account || {};
       },
       // error(_error) {

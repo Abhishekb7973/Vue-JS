@@ -1,15 +1,17 @@
 <template>
-  <table class="w-erc20-table mt-10" :class="{ 'with-header': `${bold}` }">
-    <tr
-      v-for="(row, x) in tableData2"
-      :key="x"
-      :class="{ bold: bold && x === 0 }"
-    >
-      <td v-for="(col, y) in row" :key="y" :data-th="tableData2[0][y].value">
-        {{ tableData2[x][y].value }}
-      </td>
-    </tr>
-  </table>
+  <div>
+    <table class="w-erc20-table mt-10" :class="{ 'with-header': `${bold}` }">
+      <tr
+        v-for="(row, x) in tableData2"
+        :key="x"
+        :class="{ bold: bold && x === 0 }"
+      >
+        <td v-for="(col, y) in row" :key="y" :data-th="tableData2[0][y].value">
+          {{ tableData2[x][y].value }}
+        </td>
+      </tr>
+        </table>
+  </div>
 </template>
   
   <script>
@@ -26,6 +28,14 @@ export default {
           { value: "Amount" },
           { value: "Type" },
           { value: "Token" },
+        ],
+        [
+          { value: "No Item" },
+          { value: "No Item" },
+          { value: "No Item" },
+          { value: "No Item" },
+          { value: "No Item" },
+          { value: "No Item" },
         ],
         // [
         //   { value: "0x183 ... 43e" },

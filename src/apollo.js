@@ -6,6 +6,7 @@ import ApolloClient from 'apollo-boost';
 const apolloClient = new ApolloClient({
   // Replace `your-graphql-endpoint` with the actual GraphQL API endpoint URL
   uri: 'https://xapi-test.ncogchain.earth/',
+  // uri: 'https://xapi.techpay.io/'
 });
 
 // Install the Vue plugin

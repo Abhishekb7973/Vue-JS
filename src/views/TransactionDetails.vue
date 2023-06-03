@@ -18,55 +18,55 @@
       <ul class="strip-list mt-20">
         <li>
           <div>Hash</div>
-          <div class="imp">{{transactionData?.hash }}</div>
+          <div class="imp" style="  overflow-wrap: break-word; white-space: pre-wrap;">{{transactionData?.hash }}</div>
         </li>
         <li>
           <div>Status</div>
-          <div><button>{{(transactionData.status | formatHexToInt) ? 'Success' : 'Failed'}}</button></div>
+          <div><button>{{(transactionData?.status | formatHexToInt) ? 'Success' : 'Failed'}}</button></div>
         </li>
         <li>
           <div>Form</div>
-          <div class="green cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: transactionData.from} })">{{transactionData.from}}</div>
+          <div class="green cursor-pointer" style="  overflow-wrap: break-word; white-space: pre-wrap;" @click="$router.push({ name: 'wallet', query: {id: transactionData?.from} })">{{transactionData.from}}</div>
         </li>
         <li>
           <div>To</div>
-          <div class="green cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: transactionData.to} })">{{transactionData.to}}</div>
+          <div class="green cursor-pointer" style="  overflow-wrap: break-word; white-space: pre-wrap;" @click="$router.push({ name: 'wallet', query: {id: transactionData?.to} })">{{transactionData.to}}</div>
         </li>
         <li>
           <div>Time</div>
-          <div>{{timestampToDate(transactionData.block.timestamp)}}</div>
+          <div style="  overflow-wrap: break-word; white-space: pre-wrap;">{{timestampToDate(transactionData?.block?.timestamp)}}</div>
         </li>
         <li>
           <div>Account</div>
-          <div>{{transactionData.value | formatHexToInt}} NEC</div>
+          <div>{{transactionData?.value | formatHexToInt}} NEC</div>
         </li>
         <li>
           <div>Block</div>
-          <div class="green cursor-pointer" @click="$router.push({path: '/blocks/details/', query: {id: transactionData.block.number}})">{{transactionData.block.number | formatHexToInt}}</div>
+          <div class="green cursor-pointer" @click="$router.push({path: '/blocks/details/', query: {id: transactionData?.block?.number}})">{{transactionData?.block?.number | formatHexToInt}}</div>
         </li>
         <li>
           <div>Gas Used</div>
-          <div>{{transactionData.gasUsed  | formatHexToInt}}</div>
+          <div>{{transactionData?.gasUsed  | formatHexToInt}}</div>
         </li>
         <li>
           <div>Gas Limit</div>
-          <div>{{transactionData.gas | formatHexToInt}}</div>
+          <div>{{transactionData?.gas | formatHexToInt}}</div>
         </li>
         <li>
           <div>Gas Price</div>
-          <div>{{transactionData.gasPrice | formatHexToInt}} WEI</div>
+          <div>{{transactionData?.gasPrice | formatHexToInt}} WEI</div>
         </li>
         <li>
           <div>Nonce</div>
-          <div>{{transactionData.nonce | formatHexToInt}}</div>
+          <div>{{transactionData?.nonce | formatHexToInt}}</div>
         </li>
         <li>
           <div>Transaction Fee</div>
-          <div>{{WEIToNEC(formatHexToInt(transactionData.gasPrice) * formatHexToInt(transactionData.gasUsed))}} NEC</div>
+          <div>{{WEIToNEC(formatHexToInt(transactionData?.gasPrice) * formatHexToInt(transactionData.gasUsed))}} NEC</div>
         </li>
         <li>
           <div>Input Data</div>
-          <div> {{ transactionData.inputData }}</div>
+          <div> {{ transactionData?.inputData }}</div>
         </li>
       </ul>
     </div>

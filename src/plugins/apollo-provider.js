@@ -29,6 +29,7 @@ function setHttpApolloProviders(_providers, _defaultHttpProvider) {
 const apolloProviders = [
     {
         http: 'https://xapi-test.ncogchain.earth/',
+        // http: 'https://xapi.techpay.io/',
         // for subscriptions
         ws: '',
     },

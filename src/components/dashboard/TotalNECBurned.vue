@@ -54,7 +54,7 @@ const GET_BURNT_TOTAL = gql`
 
 const GET_BURNT_LIST = gql`
                     query GetNecLatestBlockBurnList($count: Int = 25) {
-                      tpcLatestBlockBurnList(count: $count) {
+                      necLatestBlockBurnList(count: $count) {
                             blockNumber
                             timestamp
                             necValue

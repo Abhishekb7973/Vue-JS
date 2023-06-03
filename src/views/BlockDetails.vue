@@ -210,7 +210,6 @@ export default {
         };
       },
       result({data}) {
-        console.log(data)
         if(data && data.block) {
           this.blockData = data.block
           this.transactionsData = data.block.txList

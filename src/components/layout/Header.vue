@@ -36,17 +36,17 @@
           </div>
         </div>
       </div>
-      <div class="theme-switch lg:block hidden">
+      <!-- <div class="theme-switch lg:block hidden">
         <theme-switch />
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
-import ThemeSwitch from "../common/ThemeSwitch.vue";
+// import ThemeSwitch from "../common/ThemeSwitch.vue";
 export default {
-  components: { ThemeSwitch },
+  // components: { ThemeSwitch },
   name: "main-header",
   data() {
     return {};
