@@ -21,7 +21,7 @@
           <div>Txns</div>
         </div>
         <div class="col-span-4 body">
-          <div>{{ block.block.number | formatHexToInt }}</div>
+          <div @click="$router.push({ name: 'blocksDetails', query: {id:block.block.number } })">{{ block.block.number | formatHexToInt }}</div>
           <div><timeago :datetime="timestampToDate(block.block.timestamp)" :auto-update="1" :converter-options="{includeSeconds: true}"></timeago></div>
           <div>{{ block.block.transactionCount }}</div>
         </div>

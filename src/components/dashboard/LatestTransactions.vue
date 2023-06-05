@@ -24,12 +24,12 @@
           <div>Amount (NEC)</div>
         </div>
         <div class="col-span-9 body">
-          <div>{{ item.transaction.hash | formatHash}}</div>
+          <div class="cursor-pointer" @click="$router.push({name: 'transactionDetails', query: {id: item.transaction.hash}})">{{ item.transaction.hash | formatHash}}</div>
           <div>
             <timeago :datetime="timestampToDate(item.transaction.block.timestamp)" :auto-update="1" :converter-options="{includeSeconds: true}"></timeago>
           </div>
-          <div>{{ item.transaction.from | formatHash }}</div>
-          <div>{{ item.transaction.to | formatHash }}</div>
+          <div class="cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: item?.transaction?.from} })">{{ item.transaction.from | formatHash }}</div>
+          <div class="cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: item?.transaction.to} })">{{ item.transaction.to | formatHash }}</div>
           <div>{{ formatNumberByLocale(numToFixed(WEIToNEC(item.transaction.value), 2), 2) }}</div>
         </div>
       </li>
