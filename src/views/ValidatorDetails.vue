@@ -7,7 +7,7 @@
         </template>
         <template v-slot:actions>
           <div class="breadcrumb">
-            Home <img src="../assets/icons/chevron-right.svg" alt="" /> Stacking
+            <span class="cursor-pointer" @click="$router.push({name: 'home'})">Home</span> <img src="../assets/icons/chevron-right.svg" alt="" /> <span class="cursor-pointer" @click="$router.push({name: 'staking'})">Stacking</span>
             <img src="../assets/icons/chevron-right.svg" alt="" /> Validator
             Details
           </div>
@@ -36,7 +36,7 @@
         </li>
         <li>
           <div>Delegate Address</div>
-          <div>{{ id }}</div>
+          <div class="cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: id} })">{{ id }}</div>
         </li>
         <li>
           <div>Staking start epoch</div>
@@ -126,7 +126,7 @@
         <tr v-for="(item, idx) in tableData2" :key="idx">
           <td :data-th="theadData2[idx2].value" v-for="(i, idx2) in item" :key="'td-' + idx2">
             <template v-if="i.key == 'address'">
-              <div @click="$router.push({ name: 'wallet', query: {id: i.value} })">
+              <div class="cursor-pointer" @click="$router.push({ name: 'wallet', query: {id: i.value} })">
                 {{ i.value | formatHash}}
               </div>
             </template>

@@ -9,7 +9,7 @@
         </template>
         <template v-slot:actions>
           <div class="breadcrumb">
-            Home <img src="../assets/icons/chevron-right.svg" alt="" /> Epochs
+            <span class="cursor-pointer" @click="$router.push({name: 'home'})">Home</span> <img src="../assets/icons/chevron-right.svg" alt="" /> <span class="cursor-pointer" @click="$router.push({name: 'epochs'})">Epochs</span>
             <img src="../assets/icons/chevron-right.svg" alt="" /> Details
           </div>
         </template>

@@ -28,6 +28,7 @@
           :key="idx"
         >
           <td
+          class="cursor-pointer"
           @click="$router.push({ name: 'wallet', query: {id: item[0].value} })"
             :data-th="theadData[idx2].value"
             v-for="(i, idx2) in item"

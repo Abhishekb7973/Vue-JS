@@ -7,8 +7,8 @@
         </template>
         <template v-slot:actions>
           <div class="breadcrumb">
-            Home
-            <img src="../assets/icons/chevron-right.svg" alt="" /> Transaction
+            <span class="cursor-pointer" @click="$router.push({name: 'home'})">Home</span>
+            <img class="" src="../assets/icons/chevron-right.svg" alt="" /> <span class="cursor-pointer" @click="$router.push({name: 'transactions'})">Transaction</span>
             <img src="../assets/icons/chevron-right.svg" alt="" /> Transaction
             Details
           </div>
@@ -66,7 +66,7 @@
         </li>
         <li>
           <div>Input Data</div>
-          <div> {{ transactionData?.inputData }}</div>
+          <div style="overflow-wrap: break-word;white-space: pre-wrap;"> {{ transactionData?.inputData }}</div>
         </li>
       </ul>
     </div>

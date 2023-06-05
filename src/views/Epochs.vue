@@ -37,7 +37,7 @@
             {{ i.value | formatHexToInt}}
           </template>
           <template v-else-if="i.key == 'timestamp'">
-            {{timestampToDate(i.value)}}
+            {{formatDate(timestampToDate(i.value))}}
           </template>
           <template v-else-if="i.key == 'fee'">
             {{ WEIToNEC(i.value * (gasPrice || 1500000000)) }}
@@ -72,6 +72,7 @@ import {
   numToFixed,
   formatNumberByLocale,
   formatHexToInt,
+  formatDate
 } from "@/filters";
 import { WEIToNEC } from "@/utils/transactions";
 const GET_EPOACH_LIST = gql`
@@ -234,6 +235,7 @@ export default {
     formatNumberByLocale,
     formatHexToInt,
     WEIToNEC,
+    formatDate
   },
 };
 </script>
