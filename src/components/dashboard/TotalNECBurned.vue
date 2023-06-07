@@ -112,7 +112,7 @@ export default {
     burnListData: {
       query: GET_BURNT_LIST,
       variables: {
-          count: 5,
+          count: 3,
       },
       fetchPolicy: "network-only",
       result({ data }) {

@@ -42,7 +42,7 @@
                       <div>Total Self-Staked</div>
                     </div>
                     <div>
-                      {{ dTotals.fSelfStaked}} NEC
+                      {{ dTotals?.fSelfStaked}} NEC
                       <div>0%</div>
                     </div>
                   </li>
@@ -53,7 +53,7 @@
                       <div>Total Delegated</div>
                     </div>
                     <div>
-                      {{dTotals.fTotalDelegated}} NEC
+                      {{dTotals?.fTotalDelegated}} NEC
                       <div>-</div>
                     </div>
                   </li>
@@ -64,7 +64,7 @@
                       <div>Total Staked</div>
                     </div>
                     <div>
-                      {{dTotals.fTotalStaked}} NEC
+                      {{dTotals?.fTotalStaked}} NEC
                       <div>0%</div>
                     </div>
                   </li>
@@ -75,7 +75,7 @@
                       <div>Daily Rewards</div>
                     </div>
                     <div>
-                      {{formatNumberByLocale(numToFixed(WEIToNEC(epoch.baseRewardPerSecond) * 86400), 0)}} NEC
+                      {{formatNumberByLocale(numToFixed(WEIToNEC(epoch?.baseRewardPerSecond) * 86400), 0)}} NEC
                       <div>-</div>
                     </div>
                   </li>
@@ -92,23 +92,23 @@
             <ul class="strip-list-small">
               <li>
                 <div>Epoch Number</div>
-                <div>{{epoch.id | formatHexToInt}}</div>
+                <div>{{epoch?.id | formatHexToInt}}</div>
               </li>
               <li>
                 <div>End Time</div>
-                <div><timeago :datetime="timestampToDate(epoch.endTime)" :auto-update="1" :converter-options="{includeSeconds: true}"></timeago></div>
+                <div><timeago :datetime="timestampToDate(epoch?.endTime)" :auto-update="1" :converter-options="{includeSeconds: true}"></timeago></div>
               </li>
               <li>
                 <div>Duration</div>
-                <div>{{formatHexToInt(epoch.duration) | formatDuration}}</div>
+                <div>{{formatHexToInt(epoch?.duration) | formatDuration}}</div>
               </li>
               <li>
                 <div>Fee</div>
-                <div>{{epoch.epochFee | formatHexToInt}} NEC</div>
+                <div>{{epoch?.epochFee | formatHexToInt}} NEC</div>
               </li>
               <li>
                 <div>Total Supply</div>
-                <div>{{WEIToNEC(epoch.totalSupply)}} NEC</div>
+                <div>{{WEIToNEC(epoch?.totalSupply)}} NEC</div>
               </li>
             </ul>
           </div>
@@ -265,6 +265,7 @@ export default {
         dataLabels: {
           enabled: false,
         },
+
         // responsive: [
         //   {
         //     breakpoint: 1280,
@@ -323,8 +324,8 @@ export default {
     cDailyRewards() {
       const { epoch } = this;
 
-      if (epoch && epoch.baseRewardPerSecond) {
-        return WEIToNEC(epoch.baseRewardPerSecond) * 86400;
+      if (epoch && epoch?.baseRewardPerSecond) {
+        return WEIToNEC(epoch?.baseRewardPerSecond) * 86400;
       }
 
       return 0;
@@ -461,7 +462,7 @@ export default {
           fTotalStaked: formatNumberByLocale(numToFixed(_totals.totalStaked, 2)),
         };
         setTimeout(() => {
-          this.series = [parseInt(this.dTotals.fSelfStaked), parseInt(this.dTotals.fTotalDelegated), parseInt(this.formatNumberByLocale(this.numToFixed(this.WEIToNEC(this.epochData?.baseRewardPerSecond || 0) * 86400), 0)), parseInt(this.dTotals.fTotalStaked)]
+          this.series = [parseInt(this.dTotals.selfStaked), parseInt(this.dTotals.totalDelegated), parseInt(this.WEIToNEC(this.epochData?.baseRewardPerSecond || 0) * 86400), parseFloat(this.dTotals.totalStaked)]
         }, 500);
     },
 
