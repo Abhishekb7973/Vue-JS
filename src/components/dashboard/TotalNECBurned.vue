@@ -1,5 +1,5 @@
 <template>
-  <div class="total-nec-burned content-box px-[35px] py-[30px]" style="max-height: 520px;">
+  <div class="total-nec-burned content-box px-[35px] py-[30px]" style="max-height: 400px;">
     <div class="md:grid md:grid-cols-10">
       <div class="xl:col-span-4 md:col-span-5">
         <block-header>
@@ -112,7 +112,7 @@ export default {
     burnListData: {
       query: GET_BURNT_LIST,
       variables: {
-          count: 3,
+          count: 4,
       },
       fetchPolicy: "network-only",
       result({ data }) {

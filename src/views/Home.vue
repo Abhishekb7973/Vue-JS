@@ -36,6 +36,7 @@
       <div class="chart xl:col-span-5 mlg:col-span-6">
         <apex-chart
           type="area"
+          ref="chart"
           height="270"
           :options="chartOptions"
           :series="series"
@@ -63,6 +64,7 @@ import LatestBlocks from "@/components/dashboard/LatestBlocks.vue";
 import LatestTransactions from "@/components/dashboard/LatestTransactions.vue";
 import TotalNecBurned from "@/components/dashboard/TotalNECBurned.vue";
 // import AnimatedNumber from "animated-number-vue";
+
 import gql from "graphql-tag";
 import {
   timestampToDate,
@@ -207,6 +209,7 @@ export default {
           type: "date",
           categories: [
           ],
+
         },
         tooltip: {
           x: {
@@ -282,15 +285,26 @@ export default {
             xAxisData.push(element.day);
             yAxisData.push(element.volume);
           }
-          // tempData.push(5)
-          // data.trxVolume.map((element) => {
-            //   console.log(element.day)
-            //   xAxisData.push(element.day);
-            //   yAxisData.push(element.volume);
-            // });
-            this.$set(this.chartOptions.xaxis.categories, xAxisData);
-          // this.chartOptions.xaxis.categories = xAxisData;
+            this.chartOptions = {
+              ...this.chartOptions,
+              xaxis: {
+                categories: xAxisData,
+                type: 'datetime',
+                labels: {
+                  formatter: function (value) {
+                    const index = xAxisData.indexOf(value); // Retrieve the index using dataLabels
+                    if (index % 5 === 0) { // Display a label for every 5th record
+                      const date = new Date(value);
+                      return date.toLocaleDateString(); // Modify the date format as desired
+                    } else {
+                      return '';
+                    }
+                  }
+                }
+              },
+            };
           this.series= [{ name: "trxVolume", data: yAxisData }];
+
         }
       },
     },
