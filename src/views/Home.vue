@@ -206,15 +206,25 @@ export default {
           curve: "straight",
         },
         xaxis: {
+          labels: {
+            show: false, // Hide x-axis labels
+          },
           type: "date",
           categories: [
           ],
 
         },
         tooltip: {
-          x: {
+          x: {  
             format: "yyyy-MM-dd",
           },
+          // y: {
+          //   formatter: (value) => {
+          //     // Customize tooltip content to show x-axis data on hover
+          //     // const xData = this.chartData.xaxis.categories[value.x];
+          //     // return `${xData}: ${value.y}`;
+          //   },
+          // },
         },
       },
       transactionsData: [],
@@ -271,7 +281,7 @@ export default {
       query: GET_TX_VOLUMES,
       variables() {
         return {
-          from: "2023-04-23",
+          from: (new Date().setMonth(new Date().getMonth() - 1)).toISOString().slice(0, 10),
           to: null,
         };
       },
@@ -292,13 +302,13 @@ export default {
                 type: 'datetime',
                 labels: {
                   formatter: function (value) {
-                    const index = xAxisData.indexOf(value); // Retrieve the index using dataLabels
-                    if (index % 5 === 0) { // Display a label for every 5th record
-                      const date = new Date(value);
-                      return date.toLocaleDateString(); // Modify the date format as desired
-                    } else {
-                      return '';
-                    }
+                    // const index = xAxisData.indexOf(value); // Retrieve the index using dataLabels
+                    const date = new Date(value);
+                    return date.toLocaleDateString(); // Modify the date format as desired
+                    // if (index % 5 === 0) { // Display a label for every 5th record
+                    // } else {
+                    //   return '';
+                    // }
                   }
                 }
               },

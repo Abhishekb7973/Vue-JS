@@ -40,7 +40,8 @@
             {{formatDate(timestampToDate(i.value))}}
           </template>
           <template v-else-if="i.key == 'fee'">
-            {{ WEIToNEC(i.value * (gasPrice || 1500000000)) }}
+            {{formatNumberByLocale(parseFloat(WEIToNEC(i.value)).toFixed(2))}}
+            <!-- {{ WEIToNEC(i.value * (gasPrice || 1500000000)) }} -->
           </template>
           <template v-else>
             {{ i.value }}
