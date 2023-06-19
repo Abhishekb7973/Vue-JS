@@ -22,10 +22,11 @@
             The NCOG Chain Explorer
           </h3>
           <div class="search-input lg:ml-0 mx-auto">
-            <img src="../../assets/icons/search_icon.svg" alt="" />
+            <img @click="searchData" class="cursor-pointer" src="../../assets/icons/search_icon.svg" alt="" />
             <input
               type="search"
               placeholder="Search by addresses, transactions, and blocks"
+              v-model="searchText"
             />
           </div>
 
@@ -45,12 +46,43 @@
 
 <script>
 // import ThemeSwitch from "../common/ThemeSwitch.vue";
+import { getTypeByStr } from '@/utils/transactions';
 export default {
   // components: { ThemeSwitch },
   name: "main-header",
   data() {
-    return {};
+    return {
+      searchText: ''
+    };
   },
+  methods: {
+    searchData() {
+      if(this.searchText) {
+        const type = getTypeByStr(this.searchText);
+        let routeName = '';
+        // 
+        switch (type) {
+            case 'transaction_hash':
+                routeName = 'transactionDetails';
+                break;
+            case 'address':
+                routeName = 'wallet';
+                break;
+            case 'block':
+                routeName = 'blocksDetails';
+                break;
+            // default:
+                // this.$refs.alertWindow.show();
+        }
+
+        if (routeName) {
+            this.$router.push({ name: 'transactionDetails', query: {id: this.searchText} }, null, () => {});
+        }
+        this.searchText = ''
+      }
+    },
+  }
+
 };
 </script>
 

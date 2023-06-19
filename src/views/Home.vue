@@ -180,6 +180,13 @@ export default {
       3300
     );
   },
+  computed : {
+    getTodayDate() {
+      const newDate = new Date(); // Create a new Date object
+      newDate.setMonth(newDate.getMonth() - 1); // Set the month to June (index 5)
+      return newDate.toISOString().slice(0, 10)
+    }
+  },
   data() {
     return {
       series: [
@@ -281,7 +288,7 @@ export default {
       query: GET_TX_VOLUMES,
       variables() {
         return {
-          from: (new Date().setMonth(new Date().getMonth() - 1)).toISOString().slice(0, 10),
+          from: this.getTodayDate,
           to: null,
         };
       },

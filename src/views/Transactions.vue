@@ -1,7 +1,10 @@
 <template>
   <div
     class="transaction content-box xl:pt-[45px] pt-[30px] pb-[20px] xl:px-[48px] px-[32px]"
-  >
+    ref="tableContainer" @scroll="handleScroll"
+    style="height: 80vh; overflow-y: auto;"
+
+    >
     <block-header>
       <template v-slot:title>
         <h2>Transactions <span class="data-count">{{ totalTransactions | formatHexToInt }}</span></h2>
@@ -12,7 +15,7 @@
     </block-header>
 
     <div class="mt-8">
-      <table class="transaction-table with-header">
+      <table class="transaction-table with-header" >
         <tr>
           <td
             class="thead"
@@ -116,6 +119,17 @@ import { WEIToNEC } from '@/utils/transactions'
 export default {
   components: { BlockHeader },
   name: "transaction-page",
+  computed: {
+    currentTableData() {
+      // Calculate the start and end indices based on the current page
+      const itemsPerPage = 10; // Set the desired number of items per page
+      const startIndex = (this.currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+
+      // Return the data for the current page
+      return this.tableData.slice(startIndex, endIndex);
+    },
+  },
   data() {
     return {
       theadData: [
@@ -130,6 +144,8 @@ export default {
       tableData: [],
       totalTransactions: 0,
       bold: true,
+      currentPage: 1,
+      totalPages: 0,
     };
   },
   apollo: {
@@ -146,6 +162,7 @@ export default {
         if (data && data.transactions && data.transactions.edges) {
           // this.transactionsData = data.transactions.edges;
           this.totalTransactions =  data.transactions.totalCount
+          this.totalPages = this.formatHexToInt(data.transactions.totalCount) / 40
           const tempTransactionData = []
           data.transactions.edges.forEach(element => {
             tempTransactionData.push([
@@ -171,6 +188,24 @@ export default {
       const formattedHex =  firstDigits + middleDots + lastDigits;
 
       return formattedHex;
+    },
+    fetchData() {
+      // Implement your data fetching logic here
+      // Assign the fetched data to the tableData property
+      // Calculate the totalPages based on the available data and itemsPerPage
+    },
+    handleScroll() {
+      const container = this.$refs.tableContainer;
+      const scrollPosition = container.scrollTop + container.clientHeight;
+      const totalHeight = container.scrollHeight;
+
+      // Check if the user has scrolled to the bottom of the table
+      if (scrollPosition >= totalHeight && this.currentPage < this.totalPages) {
+        console.log('herteonthis')
+        // this.tableData = [...this.tableData, ...this.tableData]
+        // this.currentPage++;
+        // this.fetchData();
+      }
     },
     timestampToDate,
     formatHash,

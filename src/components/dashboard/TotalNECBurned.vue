@@ -100,7 +100,7 @@ export default {
     };
   },
   apollo: {
-    burnTotalAmount: {
+    necBurnedTotalAmount: {
       query: GET_BURNT_TOTAL,
       fetchPolicy: "network-only",
       result({ data }) {
@@ -109,7 +109,7 @@ export default {
         }
       },
     },
-    burnListData: {
+    necLatestBlockBurnList: {
       query: GET_BURNT_LIST,
       variables: {
           count: 4,
